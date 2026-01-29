@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+from bs4 import BeautifulSoup
+import requests
+
+# 1. Load messy dataset (Example: CSV file)
+df = pd.read_csv("messy_dataset.csv")
+
+# 2. Data exploration and cleaning
+print("Missing value statistics:")
+print(df.isnull().sum())
+
+# Handle missing values (Choose strategy based on scenario)
+df["numeric_col"] = df["numeric_col"].fillna(df["numeric_col"].median())  # Use median for numeric columns
+df["categorical_col"] = df["categorical_col"].fillna("Unknown")  # Use default value for categorical columns
+
+# Handle duplicate values
+df = df.drop_duplicates()
+
+# Handle outliers (IQR method)
+Q1 = df["numeric_col"].quantile(0.25)
+Q3 = df["numeric_col"].quantile(0.75)
+IQR = Q3 - Q1
+df = df[(df["numeric_col"] >= Q1 - 1.5*IQR) & (df["numeric_col"] <= Q3 + 1.5*IQR)]
+
+# 3. Basic analysis example (Answer business questions)
+avg_value = df.groupby("category")["numeric_col"].mean().sort_values(ascending=False)
+print("Ranking of average values by category:")
+print(avg_value)
+
+# 4. (Advanced) Web Scraping to obtain custom data
+url = "https://example.com/data-source"
+response = requests.get(url)
+soup = BeautifulSoup(response.text, "html.parser")
+data = [tag.text for tag in soup.find_all("div", class_="data-point")]
+custom_df = pd.DataFrame(data, columns=["custom_data"])
+custom_df.to_csv("scraped_data.csv", index=False)
