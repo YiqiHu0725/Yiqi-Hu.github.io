@@ -1,0 +1,35 @@
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Set professional style (Suitable for resume/portfolio presentation)
+plt.style.use("fivethirtyeight")
+plt.rcParams["font.sans-serif"] = ["Arial"]  # Resolve Chinese display issues
+
+# 1. Basic visualization (Show core conclusions)
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+# Bar chart: Comparison of average values by category
+sns.barplot(x=avg_value.index, y=avg_value.values, ax=ax1, palette="viridis")
+ax1.set_title("Average Core Indicator by Category", fontsize=14, fontweight="bold")
+ax1.set_xlabel("Category")
+ax1.set_ylabel("Average Value")
+ax1.tick_params(axis="x", rotation=45)
+
+# Line chart: Time series trend (Example)
+df["date"] = pd.to_datetime(df["date"])
+time_trend = df.groupby(df["date"].dt.month)["numeric_col"].mean()
+sns.lineplot(x=time_trend.index, y=time_trend.values, ax=ax2, marker="o", linewidth=2)
+ax2.set_title("Monthly Indicator Trend", fontsize=14, fontweight="bold")
+ax2.set_xlabel("Month")
+ax2.set_ylabel("Average Value")
+ax2.set_xticks(range(1, 13))
+
+# 2. Interactive visualization (Optional, enhance portfolio quality)
+import plotly.express as px
+fig_interactive = px.scatter(df, x="feature1", y="numeric_col", color="category", 
+                             title="Relationship Between Feature 1 and Core Indicator", hover_data=["date"])
+fig_interactive.write_html("interactive_plot.html")  # Save as HTML, embeddable in GitHub Pages
+
+plt.tight_layout()
+plt.savefig("data_story_visualization.png", dpi=300, bbox_inches="tight")
+plt.show()
